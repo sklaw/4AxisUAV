@@ -1,0 +1,168 @@
+#include <Arduino.h>
+#include "m3_bluetooth_module.h"
+#include <string.h>
+
+#define MASTER_ADDR "2015,2,120472"
+
+char *setNameCode = "AT+NAME=TEAM8_SLAVE\r\n";
+char *setPasswordCode = "AT+PSWD=9527\r\n";
+char *setBAUDCode = "AT+UART=38400,0,0\r\n";
+char *setRoleSlaveCode = "AT+ROLE=0\r\n";
+char *setCModeCode = "AT+CMODE=0\r\n";
+char *setBindCode = "AT+BIND="MASTER_ADDR"\r\n";
+
+
+char *getNameCode = "AT+NAME?\r\n";
+char *getPasswordCode = "AT+PSWD?\r\n";
+char *getAddrCode = "AT+ADDR?\r\n";
+char *getRNameCode = "AT+RNAME?\r\n";
+char *getRoleCode = "AT+ROLE?\r\n";
+char *getStateCode = "AT+STATE?\r\n";
+
+char *rebootCode = "AT+RESET\r\n";
+char *testConection = "AT\r\n";
+char *clearMatchListCode = "AT+RMAAD\r\n";
+
+
+int key_pin = 6;
+
+int mode = 0;
+
+
+int send_a_command(char *command) {
+  char reply[100];
+  int n;
+
+  Serial.print("command:");
+  Serial.print(command);
+
+  Serial3.write(command);
+  Serial3.setTimeout(3000);
+  n = Serial3.readBytesUntil('\x0a', reply, 99);
+  reply[n] = '\0';
+
+  Serial.print("reply:");
+  Serial.println(reply);
+}
+
+void bluetooth_setup() {
+  pinMode(key_pin, OUTPUT);
+
+  Serial3.begin(38400);
+
+  if (mode) {
+    digitalWrite(key_pin, HIGH);
+  }
+  else {
+    digitalWrite(key_pin, LOW);
+  }
+
+
+
+  if (mode) {
+    send_a_command(setNameCode);
+    send_a_command(setPasswordCode);
+    send_a_command(setBAUDCode);
+
+    //diff start
+    send_a_command(setRoleSlaveCode);
+    //diff end
+
+    send_a_command(clearMatchListCode);
+    digitalWrite(key_pin, LOW);
+    send_a_command(rebootCode);
+    delay(2000);
+  }
+}
+
+
+int test_master_connect() {
+  char buf[100];
+  int n;
+  int result = 1;
+
+  digitalWrite(key_pin, HIGH);
+  delay(50);
+
+  Serial3.write(getStateCode);
+  n = Serial3.readBytesUntil('\n', buf, 100);
+  buf[n] = '\0';
+  Serial.print(buf);
+
+  if (strcmp(buf, "+STATE:CONNECTED\r") != 0) {
+    result = 0;
+  }
+
+  n = Serial3.readBytesUntil('\n', buf, 100);
+  buf[n] = '\0';
+  Serial.print(buf);
+
+  if (strcmp(buf, "OK\r") != 0) {
+    result = 0;
+  }
+
+
+
+  digitalWrite(key_pin, LOW);
+
+  return result;
+
+
+}
+
+
+
+
+
+void bluetooth_loop() {
+  char from_user[100];
+  char buf[1000];
+  int n;
+  int av_n;
+  if (av_n = Serial3.available()) {
+    n = Serial3.readBytes(buf, av_n);
+    buf[n] = '\0';
+    Serial.print(buf);
+  }
+
+  if (av_n = Serial.available()) {
+    n = Serial.readBytes(from_user, av_n);
+    from_user[n] = '\0';
+
+
+    Serial.print("user:");
+    Serial.println(from_user);
+
+    if (strcmp(from_user, "name") == 0) {
+      digitalWrite(key_pin, HIGH);
+      send_a_command(getNameCode);
+      digitalWrite(key_pin, LOW);
+    }
+    else if (strcmp(from_user, "password") == 0) {
+      digitalWrite(key_pin, HIGH);
+      send_a_command(getPasswordCode);
+      digitalWrite(key_pin, LOW);
+    }
+    else if (strcmp(from_user, "addr") == 0) {
+      digitalWrite(key_pin, HIGH);
+      send_a_command(getAddrCode);
+      digitalWrite(key_pin, LOW);
+    }
+    else if (strcmp(from_user, "rname") == 0) {
+      digitalWrite(key_pin, HIGH);
+      send_a_command(getRNameCode);
+      digitalWrite(key_pin, LOW);
+    }
+    else if (strcmp(from_user, "role") == 0) {
+      digitalWrite(key_pin, HIGH);
+      send_a_command(getRoleCode);
+      digitalWrite(key_pin, LOW);
+    }
+    else {
+      Serial3.write(from_user);
+    }
+
+  }
+
+
+}

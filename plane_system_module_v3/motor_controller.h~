@@ -1,0 +1,11 @@
+#ifndef MOTOR_CONTROLLER_H
+#define MOTOR_CONTROLLER_H
+
+extern Servo myservo0;
+extern Servo myservo1;
+extern Servo myservo2;
+extern Servo myservo3;
+
+void motor_setup();
+
+#endif 

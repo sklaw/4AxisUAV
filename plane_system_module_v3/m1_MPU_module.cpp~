@@ -1,0 +1,20 @@
+#include <Arduino.h>
+#include "Sensor.h"
+
+MPU6050 accelgyro;
+Attitude Rpy;
+void MPU_setup() {
+  Serial.begin(115200);      // Set up bps for Serial communication
+  SensorSteup(accelgyro);    // Set up the integrated object as data handler
+}
+
+void MPU_loop() {
+  SensorRead(accelgyro);                                    // Receive the data from MPU6050
+  Serial.print(Rpy.Roll);
+  Serial.print(" ");
+  Serial.print(Rpy.Pitch);
+  Serial.print(" ");
+  Serial.println(Rpy.Yaw);                                         // Connect to the Servo
+}
+
+

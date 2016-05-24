@@ -1,0 +1,13 @@
+#ifndef MOTOR_MODULE_H
+#define MOTOR_MODULE_H
+
+#include <Servo.h>
+
+extern Servo motor0;
+extern Servo motor1;
+extern Servo motor2;
+extern Servo motor3;
+
+void motor_setup();
+
+#endif

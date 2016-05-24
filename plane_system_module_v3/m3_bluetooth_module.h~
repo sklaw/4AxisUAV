@@ -1,0 +1,8 @@
+#ifndef BLUETOOTH_MODULE_H
+#define BLUETOOTH_MODULE_H
+
+//we use Serial3 to communicate
+
+void bluetooth_setup();
+
+#endif

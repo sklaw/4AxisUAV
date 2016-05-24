@@ -1,0 +1,33 @@
+#include <Wire.h>
+#include <Servo.h>
+#include <Arduino.h>
+
+#include "m1_MPU_module.h"
+#include "m2_motor_module.h"
+#include "m3_bluetooth_module.h"
+
+
+
+
+
+int t;
+
+void setup() {
+  Serial.begin(38400);      // Set up bps for Serial communication
+
+  //MPU_setup();
+  motor_setup();
+  bluetooth_setup();
+  
+
+  t = 1000;
+
+}
+
+void loop() {
+  //MPU_loop();
+  motor_loop();
+  bluetooth_loop();
+}
+
+

@@ -1,0 +1,10 @@
+#ifdef MPU_MODULE_H
+#define MPU_MODULE_H
+
+extern MPU6050 accelgyro;
+extern Attitude Rpy;
+
+void MPU_setup();
+
+#endif
+

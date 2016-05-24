@@ -1,0 +1,106 @@
+#include <Arduino.h>
+#include <Servo.h>
+
+#include "m2_motor_module.h"
+#include "m3_bluetooth_module.h"
+
+
+Servo motor0;
+Servo motor1;
+Servo motor2;
+Servo motor3;
+
+int motor_value_0;
+int motor_value_1;
+int motor_value_2;
+int motor_value_3;
+
+void motor_setup() {
+  // put your setup code here, to run once:
+  int start_pin = 9;
+  motor0.attach(start_pin);
+  motor1.attach(start_pin + 1);
+  motor2.attach(start_pin + 2);
+  motor3.attach(start_pin + 3);
+
+  t = 700;
+  motor0.writeMicroseconds(t);
+  motor1.writeMicroseconds(t);
+  motor2.writeMicroseconds(t);
+  motor3.writeMicroseconds(t);
+}
+
+unsigned long m2_previousTime = 0;
+unsigned long m2_currentTime;
+long m2_interval = 10000;
+int connected = 0;
+
+void print_motor_value() {
+  Serial3.print(motor_value_0);
+  Serial3.print(' ');
+  
+}
+
+void motor_loop() {
+  m2_currentTime = millis();
+  if (m2_currentTime - m2_previousTime  > m2_interval) {
+    if (bluetooth_available) {
+      Serial3.print("connected:");
+      Serial3.println(bluetooth_connected);
+      Serial.print("connected:");
+      Serial.println(bluetooth_connected);
+    }
+    m2_previousTime = m2_currentTime;
+  }
+
+  if (!bluetooth_connected) {
+    motor_value_0 = 700;
+      	motor_value_1 = 700;
+      	motor_value_2 = 700;
+      	motor_value_3 = 700;
+  }
+
+  else if (!bluetooth_available) {
+  }
+  else {
+    char buf[1000];
+    int av_n;
+    int n;
+    if (Serial3.available()) {
+
+      char c = Serial3.read();
+
+      if (c == 'a') {
+      	motor_value_0 += 100;
+      	motor_value_1 += 100;
+      	motor_value_2 += 100;
+      	motor_value_3 += 100;
+        print_motor_value();
+      }
+      else if (c == 's') {
+       	motor_value_0 -= 100;
+      	motor_value_1 -= 100;
+      	motor_value_2 -= 100;
+      	motor_value_3 -= 100;
+        print_motor_value();
+      }
+      else if (c == 'd') {
+        motor_value_0 = 700;
+      	motor_value_1 = 700;
+      	motor_value_2 = 700;
+      	motor_value_3 = 700;
+        print_motor_value();
+      }
+
+      print_motor_value();
+    }
+  }
+
+  motor0.writeMicroseconds(motor_value_0);
+  motor1.writeMicroseconds(motor_value_1);
+  motor2.writeMicroseconds(motor_value_2);
+  motor3.writeMicroseconds(motor_value_3);
+
+}
+
+

@@ -1,0 +1,38 @@
+#include <Servo.h>
+
+Servo myservo0;
+Servo myservo1;
+Servo myservo2;
+Servo myservo3;
+
+void motor_setup() {  
+  myservo0.attach(3);       
+  myservo1.attach(11);
+  myservo2.attach(6);
+  myservo3.attach(10);
+
+}
+
+
+void motor_loop() {
+  // put your main code here, to run repeatedly:
+  int t = 1000;
+  while (1) {
+    char c = Serial.read();
+    if (c == 'a') {
+      t += 100;  
+    }
+    else if (c == 's') {
+      t -= 100;
+    }
+    Serial.println(t);
+    myservo0.writeMicroseconds(t);
+    myservo1.writeMicroseconds(t);
+    myservo2.writeMicroseconds(t);
+    myservo3.writeMicroseconds(t);
+    
+    delay(15);
+  }
+  Serial.println("3");
+}
+
